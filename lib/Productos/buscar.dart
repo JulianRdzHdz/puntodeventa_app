@@ -1,243 +1,237 @@
+// ignore_for_file: use_key_in_widget_constructors
+
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import '../database_manager.dart';
 
-class Buscar extends StatelessWidget {
+final dbManager = DatabaseManager();
+
+class Producto {
+  final int id;
+  final String nombre;
+  final double precio;
+
+  Producto({
+    required this.id,
+    required this.nombre,
+    required this.precio,
+  });
+}
+
+class Buscar extends StatefulWidget {
+  @override
+  // ignore: library_private_types_in_public_api
+  _BuscarState createState() => _BuscarState();
+}
+
+class _BuscarState extends State<Buscar> {
   final TextEditingController idController = TextEditingController();
+  List<Producto> _productos = [];
+  List<Producto> _productosFiltrados = [];
+  // List<Producto> _productosCarrito = [];
+  //un widget para mostrar los productos
+  //un widget para mostrar el carrito
+  //un card de lista para los productos
 
-    @override
-    Widget build(BuildContext context) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'B U S C A R',
-            style: TextStyle(
-              color: Colors.white, 
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
+  //List<Card> _cards = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _cargarProductos();
+    idController.addListener(_filtrarProductos);
+    print('_productos.length');
+    print(_productos.length);
+  }
+
+  @override
+  void dispose() {
+    idController.dispose();
+    super.dispose();
+  }
+
+  void _cargarProductos() async {
+
+//cargar en var box los datos de la caja 'products'
+    var box = await Hive.box('products');
+
+    print(box.values);
+
+    _productos = box.values.map((productoDb) {
+      return Producto(
+        id: productoDb['id'],
+        nombre: productoDb['name'],
+        precio: productoDb['price'],
+      );
+    }).toList();
+    _productosFiltrados = _productos;
+        setState(() {}); // Agrega esta línea para actualizar la interfaz de usuario después de cargar los productos
+
+
+    // List<Map> productosDb = await dbManager.getAll('products');
+    // _productos = productosDb.map((productoDb) {
+    //   return Producto(
+    //     id: productoDb['id'],
+    //     nombre: productoDb['nombre'],
+    //     precio: productoDb['precio'],
+    //   );
+    // }).toList();
+    // _productosFiltrados = _productos;
+  }
+
+  void _filtrarProductos() {
+   // setState(() {
+      // _productosFiltrados = _productos.where((producto) {
+      //   return producto.nombre.toLowerCase().contains(idController.text.toLowerCase()) ||
+      //       producto.id.toString() == idController.text;
+      // }).toList();
+      _productosFiltrados = _productos.where((producto) {
+        return producto.nombre.toLowerCase().contains(idController.text.toLowerCase()) ||
+            producto.id.toString() == idController.text;
+      }).toList();
+    //});
+  }
+
+  void _mostrarProductos() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Todos los productos'),
+          content: Container(
+            width: double.maxFinite,
+            child: ListView(
+              children: _productos.map((producto) {
+                return ListTile(
+                  title: Text(producto.nombre),
+                  subtitle: Text('\$${producto.precio.toStringAsFixed(2)}'),
+                );
+              }).toList(),
             ),
           ),
-          centerTitle: true,
-          flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Colors.indigo, Colors.blue], // Updated colors
-              ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cerrar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
             ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'B U S C A R',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
           ),
         ),
-        body: Container(
+        centerTitle: true,
+        flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Colors.blue, Colors.indigo], // Updated colors
+              colors: [Color.fromARGB(255, 96, 182, 252), Colors.blue],
             ),
           ),
-          padding: const EdgeInsets.fromLTRB(16, 32, 16, 16), // Updated top padding
-          child: Column(
-            children: [
-              const SizedBox(height: 20), // Updated height
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: idController,
-                      decoration: InputDecoration(
-                        labelText: 'ID/NOMBRE/PRECIO',
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Updated textfield_padding
+        ),
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.blue, Color.fromARGB(255, 96, 182, 252)],
+          ),
+        ),
+        padding: const EdgeInsets.fromLTRB(16, 32, 16, 16),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: idController,
+                    decoration: InputDecoration(
+                      labelText: 'ID/NOMBRE',
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     ),
                   ),
-                  IconButton(
-                    onPressed: () {
-                      // Handle search action
-                    },
-                    icon: const Icon(
-                      Icons.search,
-                      color: Colors.white,
-                      size: 30, // Updated icon size
-                    ),
+                ),
+                const SizedBox(width: 10),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _filtrarProductos(); // Agrega esta línea para filtrar los productos cuando se haga clic en el botón de búsqueda
+                    });
+                  },
+                  icon: const Icon(
+                    Icons.search,
+                    color: Colors.white,
+                    size: 30,
                   ),
-                ],
-              ),
-              const SizedBox(height: 40),
-                          const Expanded(
-                            child: SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  // Product 1
-                                  ListTile(
-                                    leading: CircleAvatar(
-                                      backgroundColor: Colors.white, // Updated circle color
-                                      child: Text('1'),
-                                    ),
-                                    title: Text(
-                                      'Product 1',
-                                      style: TextStyle(fontWeight: FontWeight.bold), // Updated product name style
-                                    ),
-                                    trailing: Text(
-                                      '\$10.00',
-                                      style: TextStyle(fontSize: 18, color: Colors.black), // Updated price style
-                                    ),
-                                  ),
-                                  Divider(),
-                                  // Product 2
-                                  ListTile(
-                                    leading: CircleAvatar(
-                                      backgroundColor: Colors.white, // Updated circle color
-                                      child: Text('2'),
-                                    ),
-                                    title: Text(
-                                      'Product 2',
-                                      style: TextStyle(fontWeight: FontWeight.bold), // Updated product name style
-                                    ),
-                                    trailing: Text(
-                                      '\$20.00',
-                                      style: TextStyle(fontSize: 18, color: Colors.black), // Updated price style
-                                    ),
-                                  ),
-                                  Divider(),
-                                  // Product 3
-                                  ListTile(
-                                    leading: CircleAvatar(
-                                      backgroundColor: Colors.white, // Updated circle color
-                                      child: Text('3'),
-                                    ),
-                                    title: Text(
-                                      'Product 3',
-                                      style: TextStyle(fontWeight: FontWeight.bold), // Updated product name style
-                                    ),
-                                    trailing: Text(
-                                      '\$30.00',
-                                      style: TextStyle(fontSize: 18, color: Colors.black), // Updated price style
-                                    ),
-                                  ),
-                                  Divider(),
-                                  // Product 4
-                                  ListTile(
-                                    leading: CircleAvatar(
-                                      backgroundColor: Colors.white, // Updated circle color
-                                      child: Text('4'),
-                                    ),
-                                    title: Text(
-                                      'Product 4',
-                                      style: TextStyle(fontWeight: FontWeight.bold), // Updated product name style
-                                    ),
-                                    trailing: Text(
-                                      '\$40.00',
-                                      style: TextStyle(fontSize: 18, color: Colors.black), // Updated price style
-                                    ),
-                                  ),
-                                  Divider(),
-                                  // Product 5
-                                  ListTile(
-                                    leading: CircleAvatar(
-                                      backgroundColor: Colors.white, // Updated circle color
-                                      child: Text('5'),
-                                    ),
-                                    title: Text(
-                                      'Product 5',
-                                      style: TextStyle(fontWeight: FontWeight.bold), // Updated product name style
-                                    ),
-                                    trailing: Text(
-                                      '\$50.00',
-                                      style: TextStyle(fontSize: 18, color: Colors.black), // Updated price style
-                                    ),
-                                  ),
-                                  Divider(),
-                                  // Product 6
-                                  ListTile(
-                                    leading: CircleAvatar(
-                                      backgroundColor: Colors.white, // Updated circle color
-                                      child: Text('6'),
-                                    ),
-                                    title: Text(
-                                      'Product 6',
-                                      style: TextStyle(fontWeight: FontWeight.bold), // Updated product name style
-                                    ),
-                                    trailing: Text(
-                                      '\$60.00',
-                                      style: TextStyle(fontSize: 18, color: Colors.black), // Updated price style
-                                    ),
-                                  ),
-                                  Divider(),
-                                  // Product 7
-                                  ListTile(
-                                    leading: CircleAvatar(
-                                      backgroundColor: Colors.white, // Updated circle color
-                                      child: Text('7'),
-                                    ),
-                                    title: Text(
-                                      'Product 7',
-                                      style: TextStyle(fontWeight: FontWeight.bold), // Updated product name style
-                                    ),
-                                    trailing: Text(
-                                      '\$70.00',
-                                      style: TextStyle(fontSize: 18, color: Colors.black), // Updated price style
-                                    ),
-                                  ),
-                                  Divider(),
-                                  // Product 8
-                                  ListTile(
-                                    leading: CircleAvatar(
-                                      backgroundColor: Colors.white, // Updated circle color
-                                      child: Text('8'),
-                                    ),
-                                    title: Text(
-                                      'Product 8',
-                                      style: TextStyle(fontWeight: FontWeight.bold), // Updated product name style
-                                    ),
-                                    trailing: Text(
-                                      '\$80.00',
-                                      style: TextStyle(fontSize: 18, color: Colors.black), // Updated price style
-                                    ),
-                                  ),
-                                  Divider(),
-                                  // Product 9
-                                  ListTile(
-                                    leading: CircleAvatar(
-                                      backgroundColor: Colors.white, // Updated circle color
-                                      child: Text('9'),
-                                    ),
-                                    title: Text(
-                                      'Product 9',
-                                      style: TextStyle(fontWeight: FontWeight.bold), // Updated product name style
-                                    ),
-                                    trailing: Text(
-                                      '\$90.00',
-                                      style: TextStyle(fontSize: 18, color: Colors.black), // Updated price style
-                                    ),
-                                  ),
-                                  Divider(),
-                                  // Product 10
-                                  ListTile(
-                                    leading: CircleAvatar(
-                                      backgroundColor: Colors.white, // Updated circle color
-                                      child: Text('10'),
-                                    ),
-                                    title: Text(
-                                      'Product 10',
-                                      style: TextStyle(fontWeight: FontWeight.bold), // Updated product name style
-                                    ),
-                                    trailing: Text(
-                                      '\$100.00',
-                                      style: TextStyle(fontSize: 18, color: Colors.black), // Updated price style
-                                    ),
-                                  ),
-                                  Divider(),
-                                ],
-                              ),
-                            ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: _productosFiltrados.map((producto) {
+                    return Column(
+                      children: [
+                        ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.white,
+                            child: Text('${producto.id}',
+                             style: TextStyle(fontSize: 10.0),),
                           ),
-                        ],
-                      ),
-                    ),
-                  );
-                }
-              }
+                          title: Row(
+                            children: [
+                              Text(
+                                producto.nombre,
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(width: 10),
+                              const Spacer(),
+                              Text(
+                                '\$${producto.precio.toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Divider(),
+                      ],
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _mostrarProductos,
+        child: Icon(Icons.list),
+      ),
+    );
+  }
+}

@@ -1,12 +1,24 @@
 import 'package:flutter/material.dart';
 import 'ventana2.dart';
-import 'productos.dart';
+import 'Productos/productos.dart';
+import 'Almacen/almacen.dart';
+import 'Reportes/reportes.dart';
+import 'Ventas/ventas.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  await Hive.openBox('products');
   runApp(const MaterialApp(
     home: MyHomePage(),
-    debugShowCheckedModeBanner: false, 
+    debugShowCheckedModeBanner: false,
   ));
+}
+
+Future<void> initializeHive() async {
+  await Hive.initFlutter();
+  await Hive.openBox('productos');
 }
 
 class MyHomePage extends StatelessWidget {
@@ -33,15 +45,16 @@ class MyHomePage extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: <Color>[
-                Colors.blue,
-                Colors.cyan,
+                Colors.black12,
+                Colors.black,
               ],
             ),
           ),
         ),
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.shopping_cart),
+            icon: Image.asset(
+                'assets/JR_Logo_2-removebg-preview.png'), // Cambia esto por el nombre de tu archivo de imagen
             tooltip: 'Carrito de Compras',
             onPressed: () {},
           ),
@@ -58,7 +71,8 @@ class MyHomePage extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Productos()),
+                        MaterialPageRoute(
+                            builder: (context) => const Productos()),
                       );
                     },
                     child: Container(
@@ -76,7 +90,8 @@ class MyHomePage extends StatelessWidget {
                             color: Colors.black.withOpacity(0.5),
                             spreadRadius: 5,
                             blurRadius: 7,
-                            offset: const Offset(0, 3), // changes position of shadow
+                            offset: const Offset(
+                                0, 3), // changes position of shadow
                           ),
                         ],
                       ),
@@ -99,7 +114,7 @@ class MyHomePage extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Ventana2()),
+                        MaterialPageRoute(builder: (context) => Ventas()),
                       );
                     },
                     child: Container(
@@ -117,7 +132,8 @@ class MyHomePage extends StatelessWidget {
                             color: Colors.black.withOpacity(0.5),
                             spreadRadius: 5,
                             blurRadius: 7,
-                            offset: const Offset(0, 3), // changes position of shadow
+                            offset: const Offset(
+                                0, 3), // changes position of shadow
                           ),
                         ],
                       ),
@@ -146,7 +162,8 @@ class MyHomePage extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Ventana2()),
+                        MaterialPageRoute(
+                            builder: (context) => const Almacen()),
                       );
                     },
                     child: Container(
@@ -164,7 +181,8 @@ class MyHomePage extends StatelessWidget {
                             color: Colors.black.withOpacity(0.5),
                             spreadRadius: 5,
                             blurRadius: 7,
-                            offset: const Offset(0, 3), // changes position of shadow
+                            offset: const Offset(
+                                0, 3), // changes position of shadow
                           ),
                         ],
                       ),
@@ -187,7 +205,7 @@ class MyHomePage extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Ventana2()),
+                        MaterialPageRoute(builder: (context) => Reportes()),
                       );
                     },
                     child: Container(
@@ -205,7 +223,8 @@ class MyHomePage extends StatelessWidget {
                             color: Colors.black.withOpacity(0.5),
                             spreadRadius: 5,
                             blurRadius: 7,
-                            offset: const Offset(0, 3), // changes position of shadow
+                            offset: const Offset(
+                                0, 3), // changes position of shadow
                           ),
                         ],
                       ),

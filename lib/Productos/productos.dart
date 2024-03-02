@@ -6,6 +6,8 @@ import 'package:puntodeventa_app/Productos/eliminar.dart';
 
 
 class Productos extends StatelessWidget {
+  const Productos({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +27,7 @@ class Productos extends StatelessWidget {
         toolbarHeight: 80, // Duplica el tamaño del AppBar
         actions: [
           IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.home,
               size: 30, // Incrementa el tamaño del icono
               color: Colors.white, // Cambia el color del icono a blanco
@@ -49,7 +51,7 @@ class Productos extends StatelessWidget {
                 );
               },
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -88,7 +90,7 @@ class Productos extends StatelessWidget {
                 );
               },
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -127,7 +129,7 @@ class Productos extends StatelessWidget {
                 );
               },
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -166,7 +168,7 @@ class Productos extends StatelessWidget {
                 );
               },
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
