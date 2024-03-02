@@ -135,20 +135,36 @@ class _AlmacenState extends State<Almacen> {
             ],
           ),
           actions: <Widget>[
-            TextButton(
-              child: const Text('Cancelar'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('Aceptar'),
-              onPressed: () {
-                setState(() {
-                  producto.cantidad += int.parse(_agregarController.text);
-                });
-                Navigator.of(context).pop();
-              },
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton.icon(
+                  icon: const Icon(Icons.clear),
+                  label: const Text('Cancelar'),
+                  onPressed: () {
+                    _agregarController.clear(); // Limpia el TextField
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton.icon(
+                  icon: const Icon(Icons.check),
+                  label: const Text('Aceptar'),
+                  onPressed: () {
+                    setState(() {
+                      producto.cantidad += int.parse(_agregarController.text);
+                    });
+                    var box = Hive.box('products');
+                    box.put(producto.id, {
+                      'id': producto.id,
+                      'name': producto.nombre,
+                      'quantity': producto.cantidad,
+                      'price': producto.precio,
+                    });
+                    _agregarController.clear(); // Limpia el TextField
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
             ),
           ],
         );
@@ -160,34 +176,94 @@ class _AlmacenState extends State<Almacen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('A L M A C E N'),
+        title: const Text(
+          'A L M A C E N',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
         centerTitle: true,
-      ),
-      body: Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _busquedaController,
-              decoration: const InputDecoration(
-                labelText: 'Buscar',
-              ),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.green, Colors.lightGreen],
             ),
           ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _productosFiltrados.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(_productosFiltrados[index].nombre),
-                  subtitle: Text(
-                      '\$${_productosFiltrados[index].precio.toStringAsFixed(2)}'),
-                  onTap: () => _mostrarDialogo(_productosFiltrados[index]),
-                );
-              },
-            ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: _filtrarProductos,
           ),
         ],
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.lightGreen, Colors.green],
+          ),
+        ),
+        padding: const EdgeInsets.fromLTRB(16, 32, 16, 16),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _busquedaController,
+                    decoration: InputDecoration(
+                      labelText: 'ID/NOMBRE',
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: _productosFiltrados.map((producto) {
+                    return Column(
+                      children: [
+                        ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.white,
+                            child: Text('${producto.id}'),
+                          ),
+                          title: Text(
+                            producto.nombre,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Text('Cantidad: ${producto.cantidad}'),
+                          trailing: Text(
+                            '\$${producto.precio}',
+                            style: const TextStyle(
+                                fontSize: 18, color: Colors.black),
+                          ),
+                          onTap: () => _mostrarDialogo(producto),
+                        ),
+                        const Divider(),
+                      ],
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
