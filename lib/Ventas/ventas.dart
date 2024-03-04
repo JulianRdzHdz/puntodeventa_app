@@ -42,10 +42,51 @@ class _AlmacenState extends State<Ventas> {
       'nombre': nombre,
       'cantidad': cantidad,
       'total': total,
+      'fecha': DateTime.now().toIso8601String(),
+      'hora': TimeOfDay.now().format(context),
     });
   }
 
+  void _realizarVenta() {
+    // var box = Hive.box('carrito');
+    // // var productosSeleccionados = box.values.toList();
+    // box.clear();
+    var venta = {
+      'hora': DateTime.now().toIso8601String(),
+      'productos': _productosSeleccionados,
+    };
+    var boxVentas = Hive.box('ventas');
+    boxVentas.add(venta);
+
+    // Limpia la lista de productos seleccionados
+    setState(() {
+      _productosSeleccionados.clear();
+    });
+
+    // Muestra un diálogo indicando que la venta se realizó correctamente
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Venta realizada'),
+          content: Text('Venta realizada correctamente'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                var box = Hive.box('ventas');
+                print(box.values.toList());
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _cargarProductos() async {
+    await Hive.openBox('carrito');
     var box = await Hive.box('products');
     List<Producto> productos = await box.values.map((productoDb) {
       return Producto(
@@ -176,6 +217,12 @@ class _AlmacenState extends State<Ventas> {
                         cantidad: int.parse(_descontarController.text),
                         precio: producto.precio,
                       ));
+                      // Agregar producto al carrito
+                      _agregarProductoAlCarrito(
+                        producto.nombre,
+                        int.parse(_descontarController.text),
+                        producto.precio * int.parse(_descontarController.text),
+                      );
                     });
                     var box = Hive.box('products');
                     box.put(producto.id, {
@@ -358,6 +405,7 @@ class _AlmacenState extends State<Ventas> {
                   ),
                   onPressed: () {
                     // Aquí va la lógica de pagar
+                    _realizarVenta();
                   },
                   icon: Icon(Icons.shopping_cart,
                       color: Colors.white, size: 24), // increase icon size

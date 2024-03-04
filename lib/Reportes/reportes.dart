@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
+import 'package:hive/hive.dart';
 import 'package:pdf/widgets.dart' as pw;
 //import 'package:printing/printing.dart';
 import 'package:path_provider/path_provider.dart';
@@ -9,7 +10,43 @@ import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'dart:io';
 
-class Reportes extends StatelessWidget {
+class Reportes extends StatefulWidget {
+  @override
+  _ReportesState createState() => _ReportesState();
+}
+
+class _ReportesState extends State<Reportes> {
+  List<Venta> vents = [];
+  @override
+  void initState() {
+    super.initState();
+    _cargarVentas();
+  }
+
+  void _cargarVentas() {
+    var box = Hive.box('ventas');
+    List<Venta> ventas = box.values.map((ventaDb) {
+      return Venta(
+        fecha: ventaDb['fecha'],
+        hora: ventaDb['hora'],
+        total: ventaDb['total'],
+        items: ventaDb['productos'].map((producto) {
+          return ItemVenta(
+            nombre: producto['nombre'],
+            precio: producto['precio'],
+            cantidad: producto['cantidad'],
+          );
+        }).toList(),
+      );
+    }).toList();
+    vents = ventas;
+// List<Widget> Wventas = ventas.map((venta) {
+
+    // setState(() {
+    //   // ventas = ventas;
+    // });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,9 +77,9 @@ class Reportes extends StatelessWidget {
           ),
         ),
         child: ListView.builder(
-          itemCount: ventas.length,
+          itemCount: vents.length,
           itemBuilder: (context, index) {
-            final venta = ventas[index];
+            final venta = vents[index];
             return Card(
               child: ListTile(
                 leading: CircleAvatar(
@@ -196,173 +233,183 @@ class ItemVenta {
       {required this.nombre, required this.precio, required this.cantidad});
 }
 
+llenar() {
+  var box = Hive.box('ventas');
+  // box.put('vent}as', ventas);
+  // box.toMap(
+  // box.toMap().forEach((key, value) {
+  //   print('key: $key, value: $value');
+  // });
+
+  //teniendo en cuenta que se guardo como {hora: 12:20, fecha: 17-Feb-24, total: 100.0, productos: [],cantidad: 0}
+  box.toMap().forEach((key, value) {
+    // print('key: $key, value: $value');
+    print('key: $key, value: ${value['hora']}');
+    print('key: $key, value: ${value['fecha']}');
+    print('key: $key, value: ${value['total']}');
+    print('key: $key, value: ${value['productos']}');
+    print('key: $key, value: ${value['cantidad']}');
+    // print('key: $key, value: ${value['productos'].length}');
+  });
+
+  return box;
+}
+
 // Sample data
-List<Venta> ventas = [
-  Venta(
-    fecha: '17-Feb-24',
-    hora: '12:20',
-    total: 100.0,
-    items: [
-      ItemVenta(nombre: 'Producto 1', precio: 20.0, cantidad: 1),
-      ItemVenta(nombre: 'Producto 2', precio: 30.0, cantidad: 2),
-      ItemVenta(nombre: 'Producto 3', precio: 50.0, cantidad: 1),
-      ItemVenta(nombre: 'Producto 1', precio: 20.0, cantidad: 1),
-      ItemVenta(nombre: 'Producto 2', precio: 30.0, cantidad: 2),
-      ItemVenta(nombre: 'Producto 3', precio: 50.0, cantidad: 1),
-      ItemVenta(nombre: 'Producto 1', precio: 20.0, cantidad: 1),
-      ItemVenta(nombre: 'Producto 2', precio: 30.0, cantidad: 2),
-      ItemVenta(nombre: 'Producto 3', precio: 50.0, cantidad: 1),
-      ItemVenta(nombre: 'Producto 1', precio: 20.0, cantidad: 1),
-      ItemVenta(nombre: 'Producto 2', precio: 30.0, cantidad: 2),
-      ItemVenta(nombre: 'Producto 3', precio: 50.0, cantidad: 1),
-      ItemVenta(nombre: 'Producto 1', precio: 20.0, cantidad: 1),
-      ItemVenta(nombre: 'Producto 2', precio: 30.0, cantidad: 2),
-      ItemVenta(nombre: 'Producto 3', precio: 50.0, cantidad: 1),
-    ],
-  ),
-  Venta(
-    fecha: '18-Feb-24',
-    hora: '13:30',
-    total: 150.0,
-    items: [
-      ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
-      ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
-    ],
-  ),
-  Venta(
-    fecha: '18-Feb-24',
-    hora: '13:30',
-    total: 150.0,
-    items: [
-      ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
-      ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
-    ],
-  ),
-  Venta(
-    fecha: '18-Feb-24',
-    hora: '13:30',
-    total: 150.0,
-    items: [
-      ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
-      ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
-    ],
-  ),
-  Venta(
-    fecha: '18-Feb-24',
-    hora: '13:30',
-    total: 150.0,
-    items: [
-      ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
-      ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
-    ],
-  ),
-  Venta(
-    fecha: '18-Feb-24',
-    hora: '13:30',
-    total: 150.0,
-    items: [
-      ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
-      ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
-    ],
-  ),
-  Venta(
-    fecha: '18-Feb-24',
-    hora: '13:30',
-    total: 150.0,
-    items: [
-      ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
-      ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
-    ],
-  ),
-  Venta(
-    fecha: '18-Feb-24',
-    hora: '13:30',
-    total: 150.0,
-    items: [
-      ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
-      ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
-    ],
-  ),
-  Venta(
-    fecha: '18-Feb-24',
-    hora: '13:30',
-    total: 150.0,
-    items: [
-      ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
-      ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
-    ],
-  ),
-  Venta(
-    fecha: '18-Feb-24',
-    hora: '13:30',
-    total: 150.0,
-    items: [
-      ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
-      ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
-    ],
-  ),
-  Venta(
-    fecha: '18-Feb-24',
-    hora: '13:30',
-    total: 150.0,
-    items: [
-      ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
-      ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
-    ],
-  ),
-  Venta(
-    fecha: '18-Feb-24',
-    hora: '13:30',
-    total: 150.0,
-    items: [
-      ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
-      ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
-    ],
-  ),
-  Venta(
-    fecha: '18-Feb-24',
-    hora: '13:30',
-    total: 150.0,
-    items: [
-      ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
-      ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
-    ],
-  ),
-  Venta(
-    fecha: '18-Feb-24',
-    hora: '13:30',
-    total: 150.0,
-    items: [
-      ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
-      ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
-    ],
-  ),
-  Venta(
-    fecha: '18-Feb-24',
-    hora: '13:30',
-    total: 150.0,
-    items: [
-      ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
-      ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
-    ],
-  ),
-  Venta(
-    fecha: '18-Feb-24',
-    hora: '13:30',
-    total: 150.0,
-    items: [
-      ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
-      ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
-    ],
-  ),
-  Venta(
-    fecha: '18-Feb-24',
-    hora: '13:30',
-    total: 150.0,
-    items: [
-      ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
-      ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
-    ],
-  ),
+// List<Venta> ventas = llenar();
+// [
+  
+  
+
+  // Venta(
+  //   fecha: '17-Feb-24',
+  //   hora: '12:20',
+  //   total: 100.0,
+  //   items: [],
+  // ),
+  // Venta(
+  //   fecha: '18-Feb-24',
+  //   hora: '13:30',
+  //   total: 150.0,
+  //   items: [
+  //     ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
+  //     ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
+  //   ],
+  // ),
+  // Venta(
+  //   fecha: '18-Feb-24',
+  //   hora: '13:30',
+  //   total: 150.0,
+  //   items: [
+  //     ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
+  //     ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
+  //   ],
+  // ),
+  // Venta(
+  //   fecha: '18-Feb-24',
+  //   hora: '13:30',
+  //   total: 150.0,
+  //   items: [
+  //     ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
+  //     ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
+  //   ],
+  // ),
+  // Venta(
+  //   fecha: '18-Feb-24',
+  //   hora: '13:30',
+  //   total: 150.0,
+  //   items: [
+  //     ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
+  //     ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
+  //   ],
+  // ),
+  // Venta(
+  //   fecha: '18-Feb-24',
+  //   hora: '13:30',
+  //   total: 150.0,
+  //   items: [
+  //     ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
+  //     ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
+  //   ],
+  // ),
+  // Venta(
+  //   fecha: '18-Feb-24',
+  //   hora: '13:30',
+  //   total: 150.0,
+  //   items: [
+  //     ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
+  //     ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
+  //   ],
+  // ),
+  // Venta(
+  //   fecha: '18-Feb-24',
+  //   hora: '13:30',
+  //   total: 150.0,
+  //   items: [
+  //     ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
+  //     ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
+  //   ],
+  // ),
+  // Venta(
+  //   fecha: '18-Feb-24',
+  //   hora: '13:30',
+  //   total: 150.0,
+  //   items: [
+  //     ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
+  //     ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
+  //   ],
+  // ),
+  // Venta(
+  //   fecha: '18-Feb-24',
+  //   hora: '13:30',
+  //   total: 150.0,
+  //   items: [
+  //     ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
+  //     ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
+  //   ],
+  // ),
+  // Venta(
+  //   fecha: '18-Feb-24',
+  //   hora: '13:30',
+  //   total: 150.0,
+  //   items: [
+  //     ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
+  //     ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
+  //   ],
+  // ),
+  // Venta(
+  //   fecha: '18-Feb-24',
+  //   hora: '13:30',
+  //   total: 150.0,
+  //   items: [
+  //     ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
+  //     ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
+  //   ],
+  // ),
+  // Venta(
+  //   fecha: '18-Feb-24',
+  //   hora: '13:30',
+  //   total: 150.0,
+  //   items: [
+  //     ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
+  //     ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
+  //   ],
+  // ),
+  // Venta(
+  //   fecha: '18-Feb-24',
+  //   hora: '13:30',
+  //   total: 150.0,
+  //   items: [
+  //     ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
+  //     ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
+  //   ],
+  // ),
+  // Venta(
+  //   fecha: '18-Feb-24',
+  //   hora: '13:30',
+  //   total: 150.0,
+  //   items: [
+  //     ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
+  //     ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
+  //   ],
+  // ),
+  // Venta(
+  //   fecha: '18-Feb-24',
+  //   hora: '13:30',
+  //   total: 150.0,
+  //   items: [
+  //     ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
+  //     ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
+  //   ],
+  // ),
+  // Venta(
+  //   fecha: '18-Feb-24',
+  //   hora: '13:30',
+  //   total: 150.0,
+  //   items: [
+  //     ItemVenta(nombre: 'Producto 4', precio: 50.0, cantidad: 1),
+  //     ItemVenta(nombre: 'Producto 5', precio: 100.0, cantidad: 1),
+  //   ],
+  // ),
   // Agrega más ventas aquí...
-];
+// ];
