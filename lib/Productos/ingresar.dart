@@ -162,7 +162,7 @@ class Ingresar extends StatelessWidget {
                           ],
                         );
                       },
-                    );
+                    ).whenComplete(() => Navigator.pop(context));
                   },
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,

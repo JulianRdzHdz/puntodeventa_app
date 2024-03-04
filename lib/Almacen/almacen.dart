@@ -35,14 +35,14 @@ class _AlmacenState extends State<Almacen> {
     _busquedaController.addListener(_filtrarProductos);
   }
 
-  void _cargarProductos() {
-    var box = Hive.box('products');
-    List<Producto> productos = box.values.map((productoDb) {
+  void _cargarProductos() async {
+    var box = await Hive.box('products');
+    List<Producto> productos = await box.values.map((productoDb) {
       return Producto(
-        id: productoDb['id'],
-        nombre: productoDb['name'],
-        cantidad: productoDb['quantity'],
-        precio: productoDb['price'],
+        id: productoDb['id'] ?? 0,
+        nombre: productoDb['name'] ?? '',
+        cantidad: productoDb['quantity'] ?? 0,
+        precio: productoDb['price'] ?? 0.0,
       );
     }).toList();
     setState(() {
@@ -195,10 +195,10 @@ class _AlmacenState extends State<Almacen> {
           ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: _filtrarProductos,
-          ),
+          // IconButton(
+          //   icon: const Icon(Icons.search),
+          //   onPressed: _filtrarProductos,
+          // ),
         ],
       ),
       body: Container(
@@ -241,7 +241,10 @@ class _AlmacenState extends State<Almacen> {
                         ListTile(
                           leading: CircleAvatar(
                             backgroundColor: Colors.white,
-                            child: Text('${producto.id}'),
+                            child: Text(
+                              '${producto.id}',
+                              style: TextStyle(fontSize: 10),
+                            ),
                           ),
                           title: Text(
                             producto.nombre,

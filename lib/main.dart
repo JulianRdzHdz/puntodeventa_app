@@ -10,6 +10,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   await Hive.openBox('products');
+  //await Hive.openBox('carrito');
   runApp(const MaterialApp(
     home: MyHomePage(),
     debugShowCheckedModeBanner: false,
@@ -19,6 +20,7 @@ void main() async {
 Future<void> initializeHive() async {
   await Hive.initFlutter();
   await Hive.openBox('productos');
+  //await Hive.openBox('carrito');
 }
 
 class MyHomePage extends StatelessWidget {

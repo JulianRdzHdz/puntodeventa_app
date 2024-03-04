@@ -51,7 +51,6 @@ class _BuscarState extends State<Buscar> {
   }
 
   void _cargarProductos() async {
-
 //cargar en var box los datos de la caja 'products'
     var box = await Hive.box('products');
 
@@ -65,8 +64,8 @@ class _BuscarState extends State<Buscar> {
       );
     }).toList();
     _productosFiltrados = _productos;
-        setState(() {}); // Agrega esta línea para actualizar la interfaz de usuario después de cargar los productos
-
+    setState(
+        () {}); // Agrega esta línea para actualizar la interfaz de usuario después de cargar los productos
 
     // List<Map> productosDb = await dbManager.getAll('products');
     // _productos = productosDb.map((productoDb) {
@@ -80,15 +79,17 @@ class _BuscarState extends State<Buscar> {
   }
 
   void _filtrarProductos() {
-   // setState(() {
-      // _productosFiltrados = _productos.where((producto) {
-      //   return producto.nombre.toLowerCase().contains(idController.text.toLowerCase()) ||
-      //       producto.id.toString() == idController.text;
-      // }).toList();
-      _productosFiltrados = _productos.where((producto) {
-        return producto.nombre.toLowerCase().contains(idController.text.toLowerCase()) ||
-            producto.id.toString() == idController.text;
-      }).toList();
+    // setState(() {
+    // _productosFiltrados = _productos.where((producto) {
+    //   return producto.nombre.toLowerCase().contains(idController.text.toLowerCase()) ||
+    //       producto.id.toString() == idController.text;
+    // }).toList();
+    _productosFiltrados = _productos.where((producto) {
+      return producto.nombre
+              .toLowerCase()
+              .contains(idController.text.toLowerCase()) ||
+          producto.id.toString() == idController.text;
+    }).toList();
     //});
   }
 
@@ -168,7 +169,8 @@ class _BuscarState extends State<Buscar> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
                     ),
                   ),
                 ),
@@ -197,14 +199,17 @@ class _BuscarState extends State<Buscar> {
                         ListTile(
                           leading: CircleAvatar(
                             backgroundColor: Colors.white,
-                            child: Text('${producto.id}',
-                             style: TextStyle(fontSize: 10.0),),
+                            child: Text(
+                              '${producto.id}',
+                              style: TextStyle(fontSize: 10.0),
+                            ),
                           ),
                           title: Row(
                             children: [
                               Text(
                                 producto.nombre,
-                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(width: 10),
                               const Spacer(),
@@ -228,10 +233,10 @@ class _BuscarState extends State<Buscar> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _mostrarProductos,
-        child: Icon(Icons.list),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: _mostrarProductos,
+      //   child: Icon(Icons.list),
+      // ),
     );
   }
 }
