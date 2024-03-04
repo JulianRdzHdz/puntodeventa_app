@@ -23,28 +23,56 @@ class _ReportesState extends State<Reportes> {
     _cargarVentas();
   }
 
-  void _cargarVentas() {
+  void _cargarVentas() async {
     var box = Hive.box('ventas');
     List<Venta> ventas = box.values.map((ventaDb) {
       return Venta(
-        fecha: ventaDb['fecha'],
-        hora: ventaDb['hora'],
-        total: ventaDb['total'],
+        fecha: ventaDb['fecha'] ?? '',
+        hora: ventaDb['hora'] ?? '',
+        total: ventaDb['total'] ?? 0.0,
         items: ventaDb['productos'].map((producto) {
           return ItemVenta(
-            nombre: producto['nombre'],
-            precio: producto['precio'],
-            cantidad: producto['cantidad'],
+            nombre: producto['nombre'] ?? '',
+            precio: producto['precio'] ?? 0.0,
+            cantidad: producto['cantidad'] ?? 0,
           );
         }).toList(),
       );
     }).toList();
-    vents = ventas;
-// List<Widget> Wventas = ventas.map((venta) {
+    // vents = ventas;
 
-    // setState(() {
-    //   // ventas = ventas;
-    // });
+    // vents = [
+    //   Venta(
+    //     fecha: 'fecha',
+    //     hora: 'hora',
+    //     total: 1.2,
+    //     items: [
+    //       ItemVenta(
+    //         nombre: 'nombre',
+    //         precio: 1.2,
+    //         cantidad: 1,
+    //       ),
+    //     ],
+    //   )
+    // ];
+    // List<Venta> ventas = box.values.map((ventaDb) {
+    //   return Venta(
+    //     fecha: ventaDb['fecha'] ?? '',
+    //     hora: ventaDb['hora'] ?? '',
+    //     total: ventaDb['total'] ?? 0.0,
+    //     items: ventaDb['productos'].map((producto) {
+    //       return ItemVenta(
+    //         nombre: producto['nombre'] ?? '',
+    //         precio: producto['precio'] ?? 0.0,
+    //         cantidad: producto['cantidad'] ?? 0,
+    //       );
+    //     }).toList(),
+    //   );
+    // }).toList();
+    // vents = ventas;
+    setState(() async {
+      vents = await ventas;
+    });
   }
 
   @override

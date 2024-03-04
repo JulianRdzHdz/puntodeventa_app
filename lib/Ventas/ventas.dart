@@ -42,21 +42,24 @@ class _AlmacenState extends State<Ventas> {
       'nombre': nombre,
       'cantidad': cantidad,
       'total': total,
-      'fecha': DateTime.now().toIso8601String(),
-      'hora': TimeOfDay.now().format(context),
+      // 'fecha': DateTime.now().toIso8601String(),
+      // 'hora': TimeOfDay.now().format(context),
     });
   }
 
   void _realizarVenta() {
-    // var box = Hive.box('carrito');
-    // // var productosSeleccionados = box.values.toList();
-    // box.clear();
+    var box = Hive.box('carrito');
+    var productosSeleccionados = box.values.toList();
+    box.clear();
     var venta = {
-      'hora': DateTime.now().toIso8601String(),
-      'productos': _productosSeleccionados,
+      'fecha': DateTime.now().toIso8601String().substring(0, 10),
+      'hora': TimeOfDay.now().format(context),
+      // 'hora': DateTime.now().toIso8601String(),
+      'productos': productosSeleccionados,
     };
     var boxVentas = Hive.box('ventas');
     boxVentas.add(venta);
+    // boxVentas.clear();
 
     // Limpia la lista de productos seleccionados
     setState(() {
@@ -74,8 +77,15 @@ class _AlmacenState extends State<Ventas> {
             TextButton(
               child: Text('OK'),
               onPressed: () {
+                // print(boxVentas.values.toList());
+                // //print
+                // print('fsfs');
                 var box = Hive.box('ventas');
+                print(productosSeleccionados.length);
+
                 print(box.values.toList());
+                print(productosSeleccionados.length);
+
                 Navigator.of(context).pop();
               },
             ),
