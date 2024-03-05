@@ -92,7 +92,7 @@ class _AlmacenState extends State<Ventas> {
           ],
         );
       },
-    );
+    ).whenComplete(() => Navigator.pop(context));
   }
 
   void _cargarProductos() async {

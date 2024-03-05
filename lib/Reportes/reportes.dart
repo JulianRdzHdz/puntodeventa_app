@@ -11,6 +11,8 @@ import 'package:open_file/open_file.dart';
 import 'dart:io';
 
 class Reportes extends StatefulWidget {
+  const Reportes({super.key});
+
   @override
   _ReportesState createState() => _ReportesState();
 }
@@ -23,63 +25,41 @@ class _ReportesState extends State<Reportes> {
     _cargarVentas();
   }
 
-  void _cargarVentas() async {
+  void _cargarVentas() {
     var box = Hive.box('ventas');
-    List<Venta> ventas = box.values.map((ventaDb) {
-      return Venta(
-        fecha: ventaDb['fecha'] ?? '',
-        hora: ventaDb['hora'] ?? '',
-        total: ventaDb['total'] ?? 0.0,
-        items: ventaDb['productos'].map((producto) {
-          return ItemVenta(
-            nombre: producto['nombre'] ?? '',
-            precio: producto['precio'] ?? 0.0,
-            cantidad: producto['cantidad'] ?? 0,
-          );
-        }).toList(),
-      );
-    }).toList();
-    // vents = ventas;
-
-    // vents = [
-    //   Venta(
-    //     fecha: 'fecha',
-    //     hora: 'hora',
-    //     total: 1.2,
-    //     items: [
-    //       ItemVenta(
-    //         nombre: 'nombre',
-    //         precio: 1.2,
-    //         cantidad: 1,
-    //       ),
-    //     ],
-    //   )
-    // ];
-    // List<Venta> ventas = box.values.map((ventaDb) {
-    //   return Venta(
-    //     fecha: ventaDb['fecha'] ?? '',
-    //     hora: ventaDb['hora'] ?? '',
-    //     total: ventaDb['total'] ?? 0.0,
-    //     items: ventaDb['productos'].map((producto) {
-    //       return ItemVenta(
-    //         nombre: producto['nombre'] ?? '',
-    //         precio: producto['precio'] ?? 0.0,
-    //         cantidad: producto['cantidad'] ?? 0,
-    //       );
-    //     }).toList(),
-    //   );
-    // }).toList();
-    // vents = ventas;
-    setState(() async {
-      vents = await ventas;
-    });
+    List<Venta> ventas = [];
+    for (var i = 0; i < box.length; i++) {
+      var ventaDb = box.getAt(i);
+      var productos = ventaDb['productos'];
+      List<ItemVenta> items = [];
+      // String total = '';
+      double total = 0.0;
+      for (var producto in productos) {
+        double precio = producto['total'] ?? 0.0;
+        int cantidad = producto['cantidad'] ?? 0;
+        items.add(ItemVenta(
+          nombre: producto['nombre'] ?? '',
+          precio: precio ?? 0.0,
+          cantidad: cantidad ?? 0,
+        ));
+        total += precio * cantidad;
+        // total += producto['precio'] * producto['cantidad'];
+      }
+      ventas.add(Venta(
+        fecha: ventaDb['fecha'] ?? 'Fecha',
+        hora: ventaDb['hora'] ?? 'Hora',
+        total: total,
+        items: items,
+      ));
+    }
+    vents = ventas;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'R E P O R T E S',
           style: TextStyle(
             fontWeight: FontWeight.bold,
@@ -87,7 +67,7 @@ class _ReportesState extends State<Reportes> {
         ),
         centerTitle: true,
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.yellow, Colors.orange],
               begin: Alignment.topCenter,
@@ -97,7 +77,7 @@ class _ReportesState extends State<Reportes> {
         ),
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [Colors.orange, Colors.yellow],
             begin: Alignment.topCenter,
@@ -113,7 +93,9 @@ class _ReportesState extends State<Reportes> {
                 leading: CircleAvatar(
                   child: Text(
                     venta.hora,
-                    style: TextStyle(fontSize: 12),
+                    style: const TextStyle(fontSize: 12),
+                    textAlign:
+                        TextAlign.center, // Centrar el texto en el círculo
                   ),
                 ),
                 title: Text(
@@ -122,7 +104,7 @@ class _ReportesState extends State<Reportes> {
                 ),
                 trailing: Text(
                   '\$${venta.total.toStringAsFixed(2)}',
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontSize: 16,
                       color: Colors.black), // Set the text color to black
                 ),
@@ -142,17 +124,17 @@ class _ReportesState extends State<Reportes> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Detalles de la venta'),
+          title: const Text('Detalles de la venta'),
           content: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Fecha: ${venta.fecha}'),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text('Hora: ${venta.hora}'),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text('Total: \$${venta.total.toStringAsFixed(2)}'),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 ...venta.items.map((item) => Text(
                     '${item.cantidad} x ${item.nombre} - \$${item.precio}')),
               ],
@@ -165,7 +147,7 @@ class _ReportesState extends State<Reportes> {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Row(
+                  child: const Row(
                     children: [
                       Icon(Icons.cancel), // Icono de cancelar
                       SizedBox(width: 8),
@@ -220,7 +202,7 @@ class _ReportesState extends State<Reportes> {
                     // Abrir el archivo PDF
                     OpenFile.open(file.path);
                   },
-                  child: Row(
+                  child: const Row(
                     children: [
                       Icon(Icons.print), // Icono de imprimir
                       Text('Generar Ticket'),
