@@ -42,7 +42,7 @@ class _ReportesState extends State<Reportes> {
           precio: precio ?? 0.0,
           cantidad: cantidad ?? 0,
         ));
-        total += precio * cantidad;
+        // total += precio * cantidad;
         // total += producto['precio'] * producto['cantidad'];
       }
       ventas.add(Venta(
